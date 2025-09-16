@@ -22,7 +22,7 @@ cd E3MMDTA
 # Create a virtual environment (optional but recommended)
 conda create -n e3mmdta python=3.8
 conda activate e3mmdta
-```
 
-`#Install dependencies`
-`pip install -r requirements.txt`
+#Install dependencies
+pip install -r requirements.txt
+```
