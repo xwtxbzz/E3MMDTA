@@ -9,7 +9,7 @@ from dataset import *
 from utils import *
 import time 
 dataset = 'kiba'
-data = pd.read_csv("/workspace/dataset/private/xyj/data/{}/affinity.csv".format(dataset))
+data = pd.read_csv("./data/{}/affinity.csv".format(dataset))
 data = data.to_numpy()[:]
 train_data, test_data = train_test_split(data, test_size=0.16667, random_state=42)
 print(train_data.shape,test_data.shape)
@@ -26,8 +26,8 @@ huber = nn.HuberLoss()
 # 0.0005 0.01
 # 0.0001 0.0001
 optimizer = torch.optim.SGD(model.parameters(), lr=0.0001, weight_decay=0.00005)
-if os.path.exists('/workspace/algorithm/test/model/CoreNet_B_{}.pth'.format(dataset)):
-    model.load_state_dict(torch.load('/workspace/algorithm/test/model/CoreNet_KAF_{}.pth'.format(dataset)))
+if os.path.exists('./model/CoreNet{}.pth'.format(dataset)):
+    model.load_state_dict(torch.load('./model/CoreNet{}.pth'.format(dataset)))
 
 torch.cuda.empty_cache()
 avg_loss = 0
@@ -63,7 +63,7 @@ for epoch in range(500):
         torch.cuda.empty_cache()
         
     print('Average Loss:', avg_loss / len(train_data))
-    torch.save(model.state_dict(), '/workspace/algorithm/test/model/CoreNet_KAF_{}.pth'.format(dataset))
+    torch.save(model.state_dict(), './model/CoreNet{}.pth'.format(dataset))
     y = []
     p = []
     model.eval()

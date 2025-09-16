@@ -2,7 +2,6 @@ from rdkit.Chem import MACCSkeys
 import networkx as nx
 import numpy as np
 import rdkit.Chem as Chem
-import torch
 # nomarlize
 def dic_normalize(dic):
     # print(dic)
@@ -75,14 +74,11 @@ CHARISOSMISET = {"#": 29, "%": 30, ")": 31, "(": 1, "+": 32, "-": 33, "/": 34, "
                 "V": 18, "Y": 52, "[": 53, "Z": 19, "]": 54, "\\": 20, "a": 55, "c": 56, 
                 "b": 21, "e": 57, "d": 22, "g": 58, "f": 23, "i": 59, "h": 24, "m": 60, 
                 "l": 25, "o": 61, "n": 26, "s": 62, "r": 27, "u": 63, "t": 28, "y": 64}
-# mol atom feature for mol graph
-# one ont encoding
+
 def one_of_k_encoding(x, allowable_set):
     if x not in allowable_set:
-        # print(x)
         raise Exception('input {0} not in allowable set{1}:'.format(x, allowable_set))
     return [1 if x == s else 0 for s in allowable_set]
-    return list(map(lambda s: x == s, allowable_set))
 
 
 def one_of_k_encoding_unk(x, allowable_set):
@@ -90,7 +86,6 @@ def one_of_k_encoding_unk(x, allowable_set):
     if x not in allowable_set:
         x = allowable_set[-1]
     return [1 if x == s else 0 for s in allowable_set]
-    return list(map(lambda s: x == s, allowable_set))
 
 def atom_features(atom):
     # 44 +11 +11 +11 +1
@@ -183,31 +178,13 @@ def label_chars(chars, char_set,len):
     for i, ch in enumerate(chars):
         X[i] = char_set[ch]
     return X
-# from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
-# from skfp.fingerprints import *
-# def get_fingerprint(smiles):
-#     mol_from_smiles = MolFromSmilesTransformer()
-#     mols = mol_from_smiles.transform([smiles])
-#     conf_gen = ConformerGenerator()
-#     mols = conf_gen.transform(mols)
-#     fp = E3FPFingerprint()
-#     e3fp = fp.transform(mols)[0]
-#     fp = ERGFingerprint()
-#     ergfp = fp.transform(mols)[0]
-#     fp = PubChemFingerprint()
-#     pubfp = fp.transform(mols)[0]
-#     fp = MACCSFingerprint()
-#     maccs = fp.transform(mols)[0]
-#     return (e3fp, ergfp, pubfp, maccs)
 import numpy as np
-import subprocess
 from math import sqrt
 from sklearn.metrics import average_precision_score
 from scipy import stats
 from scipy.stats import pearsonr
 
 def get_aupr(Y, P, threshold=7.0):
-    # print(Y.shape,P.shape)
     Y = np.where(Y >= 7.0, 1, 0)
     P = np.where(P >= 7.0, 1, 0)
     aupr = average_precision_score(Y, P)
@@ -325,7 +302,7 @@ def calculate_metrics(Y, P, dataset='davis',type = 'test'):
     rmse = get_rmse(Y, P)
 
 
-    result_file_name = '/workspace/algorithm/test/results/result_' + '_' + dataset + '.txt'
+    result_file_name = './results/result_' + '_' + dataset + '.txt'
     result_str = ''
     result_str += '\n'+type+' '+dataset + '\r\n'
     result_str += 'rmse:' + str(rmse) + ' ' + ' mse:' + str(mse) + ' ' + ' pearson:' + str(

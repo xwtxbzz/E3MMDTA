@@ -1,0 +1,10 @@
+numpy
+rdkit
+torch==1.12.1
+scikit-learn
+pandas
+torch-scatter
+torch-sparse
+torch-geometric
+network
+skfp
