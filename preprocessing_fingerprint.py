@@ -2,7 +2,6 @@ from rdkit import Chem
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 from skfp.fingerprints import *
 
-# dataset = 'kiba'
 def get_fingerprint(smiles):
     mol_from_smiles = MolFromSmilesTransformer()
     mols = mol_from_smiles.transform([smiles])
