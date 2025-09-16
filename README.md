@@ -1,2 +1,2 @@
 # E3MMDTA
-A multimodal framework that integrates Ex- tended 3-Dimensional FingerPrint(E3FP) with 2D graphs, se- quence embeddings, and pre-trained language model features.
+A multimodal framework that integrates Extended 3-Dimensional FingerPrint(E3FP) with 2D graphs, sequence embeddings, and pretrained language model features.
