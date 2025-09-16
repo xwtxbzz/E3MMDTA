@@ -14,13 +14,15 @@ E3MMDTA is a comprehensive deep learning framework that integrates 3D stereochem
 -RDKit
 -CUDA-capable GPU (recommended)
 # install from source
-`#Clone the repository`
-`git clone https://github.com/yourusername/E3MMDTA.git`
-`cd E3MMDTA
+```
+#Clone the repository
+git clone https://github.com/yourusername/E3MMDTA.git
+cd E3MMDTA
 
-`# Create a virtual environment (optional but recommended)`
-`conda create -n e3mmdta python=3.8`
-`conda activate e3mmdta`
+# Create a virtual environment (optional but recommended)
+conda create -n e3mmdta python=3.8
+conda activate e3mmdta
+```
 
 `#Install dependencies`
 `pip install -r requirements.txt`
