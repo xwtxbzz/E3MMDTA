@@ -4,15 +4,15 @@ Official implementation of "E3MMDTA: Predicting Drug Target Affinity by Combinin
 ![Frame of E3MMDTA](./frame.png)
 E3MMDTA is a comprehensive deep learning framework that integrates 3D stereochemical molecular fingerprints (E3FP) with molecular graphs, sequence embeddings, and pre-trained language model features for accurate drug-target affinity (DTA) prediction. Our model addresses limitations of existing methods by effectively capturing 3D molecular information and employing an attention-based fusion module to balance heterogeneous inputs.
 # Feature
--3D Molecular Representation: Incorporates E3FP fingerprints to capture stereochemical information beyond conventional 2D descriptors
--Multimodal Fusion: Combines molecular graphs, protein contact graphs, sequence embeddings, and fingerprint vectors
--Advanced Architecture: Utilizes GCN-GAT-SuperGAT pipeline for graph encoding and multi-scale CNN for sequence processing
+- 3D Molecular Representation: Incorporates E3FP fingerprints to capture stereochemical information beyond conventional 2D descriptors
+- Multimodal Fusion: Combines molecular graphs, protein contact graphs, sequence embeddings, and fingerprint vectors
+- Advanced Architecture: Utilizes GCN-GAT-SuperGAT pipeline for graph encoding and multi-scale CNN for sequence processing
 # Prerequisites
--Python 3.8+
--PyTorch 1.12+
--pyg
--RDKit
--CUDA-capable GPU (recommended)
+- Python 3.8+
+- PyTorch 1.12+
+- pyg
+- RDKit
+- CUDA-capable GPU (recommended)
 # install from source
 ```
 #Clone the repository
