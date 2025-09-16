@@ -30,6 +30,7 @@ conda activate e3mmdta
 
 # Install dependencies
 pip install -r requirements.txt
+
 # train and test
 python train.py
 ```
