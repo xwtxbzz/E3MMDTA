@@ -21,11 +21,6 @@ class MultiModalFusion(nn.Module):
                 nn.Dropout(dropout),
                 nn.LayerNorm(hidden_dim)
             )
-        self.cross_attention = nn.MultiheadAttention(
-            embed_dim=hidden_dim, 
-            num_heads=num_heads, 
-            dropout=dropout,
-        )
         self.output_proj = nn.Sequential(
             nn.Linear(hidden_dim * len(input_dims), hidden_dim),
             nn.ReLU(),
@@ -46,12 +41,6 @@ class MultiModalFusion(nn.Module):
             transformed_features[modality] = self.modality_transform[modality](
                 modality_features[modality]
             )
-        stacked_features = torch.stack([
-            transformed_features[modality] for modality in self.modality_names
-        ], dim=1)
-        attended_features, _ = self.cross_attention(
-            stacked_features, stacked_features, stacked_features
-        )
         gate_weights = torch.cat([
             self.gates[modality](transformed_features[modality]) 
             for modality in self.modality_names
