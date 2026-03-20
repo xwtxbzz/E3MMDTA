@@ -21,7 +21,7 @@ E3MMDTA is a comprehensive deep learning framework that integrates 3D stereochem
 # Install and Train
 ```
 # Clone the repository
-git clone https://github.com/yourusername/E3MMDTA.git
+git clone https://github.com/xwtxbzz/E3MMDTA.git
 cd E3MMDTA
 
 # Create a virtual environment (optional but recommended)
