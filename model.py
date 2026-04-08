@@ -5,16 +5,6 @@ from torch_geometric.nn import GCNConv, GATConv, SuperGATConv, global_mean_pool 
  
 class MultiModalFusion(nn.Module):
     def __init__(self, input_dims, hidden_dim=512, output_dim=256, num_heads=2, dropout=0.1):
-        """
-        多模态融合模块
-        
-        参数:
-            input_dims: 各模态输入维度字典
-            hidden_dim: 隐藏层维度
-            output_dim: 输出维度
-            num_heads: 多头注意力头数
-            dropout: dropout率
-        """
         super(MultiModalFusion, self).__init__()
         
         self.input_dims = input_dims
