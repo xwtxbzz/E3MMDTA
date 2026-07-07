@@ -20,9 +20,10 @@ class MultiModalFusion(nn.Module):
             )
         
         self.cross_attention = nn.MultiheadAttention(
-            embed_dim=hidden_dim, 
-            num_heads=num_heads, 
+            embed_dim=hidden_dim,
+            num_heads=num_heads,
             dropout=dropout,
+            batch_first=True
         )
         
         self.output_proj = nn.Sequential(
@@ -50,16 +51,23 @@ class MultiModalFusion(nn.Module):
             transformed_features[modality] for modality in self.modality_names
         ], dim=1)
         
-        attended_features, _ = self.cross_attention(
-            stacked_features, stacked_features, stacked_features
+        attended_features,_ = self.cross_attention(
+            stacked_features,
+            stacked_features,
+            stacked_features
         )
-        
-        gate_weights = torch.cat([
-            self.gates[modality](transformed_features[modality]) 
-            for modality in self.modality_names
-        ], dim=1)
-        
-        gate_weights = F.softmax(gate_weights, dim=1)
+
+        attended_features = attended_features + stacked_features
+        attended_features = F.layer_norm(
+            attended_features,
+            (attended_features.size(-1),)
+        )
+        gate_logits = torch.cat([
+            self.gates[m](transformed_features[m])
+            for m in self.modality_names
+        ],dim=1)
+
+        gate_weights = F.softmax(gate_logits,dim=1)
         
         weighted_features = torch.stack([
             gate_weights[:, i].unsqueeze(1) * transformed_features[modality]
@@ -83,10 +91,9 @@ class SimpleNet(torch.nn.Module):
         self.one = nn.Sequential(nn.Conv1d(num_features, output_dim, 1),nn.ReLU(),nn.Dropout(dropout))
         self.three = nn.Sequential(nn.Conv1d(num_features, output_dim, 3,padding=1),nn.ReLU(),nn.Dropout(dropout))
         self.five = nn.Sequential(nn.Conv1d(num_features, output_dim, 5,padding=2),nn.ReLU(),nn.Dropout(dropout))
-        # self.seven = nn.Sequential(nn.Conv1d(num_features, output_dim, 7,padding=3),nn.LeakyReLU(),nn.Dropout(dropout))
         self.embed = nn.Embedding(num_features, output_dim)
         self.dropout = nn.Dropout(dropout)
-        self.ln = nn.BatchNorm1d(output_dim)
+        self.ln = nn.LayerNorm(768)
         self.out = nn.Linear(output_dim*3, output_dim)
         self.pool = nn.AvgPool1d(output_dim)
         self.l1 = nn.Linear(1280,output_dim)
@@ -97,7 +104,6 @@ class SimpleNet(torch.nn.Module):
     def forward(self,seq):
         if self.em:
             sq = self.embed(seq)
-            # sq = self.hnet(seq)
         else:
             sq = self.re(self.l1(seq))
         o = self.o_f(self.o_t(self.one(sq)))
@@ -112,7 +118,6 @@ class CoreNet(nn.Module):
     def __init__(self, n_output=1, output_dim=256, dropout=0.1, 
                  num_features_mol=78, num_features_pro=34):
         super(CoreNet, self).__init__()
-        
         self.mol_conv1 = GCNConv(num_features_mol, num_features_mol)
         self.mol_conv2 = GATConv(num_features_mol*2, num_features_mol * 2)
         self.mol_conv3 = SuperGATConv(num_features_mol * 4, num_features_mol * 4)
@@ -134,7 +139,6 @@ class CoreNet(nn.Module):
         self.f2 = nn.Linear(315, output_dim)   # ergfp
         self.f3 = nn.Linear(881, output_dim)   # pubfp
         self.f4 = nn.Linear(166, output_dim)   # maccsfp
-        
         fusion_input_dims = {
             'mol_graph': output_dim,
             'pro_graph': output_dim,
@@ -160,10 +164,18 @@ class CoreNet(nn.Module):
         
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(dropout)
-        self.bn1 = nn.BatchNorm1d(1024)
-        self.bn2 = nn.BatchNorm1d(512)
-        self.bn_out = nn.BatchNorm1d(n_output)
-    
+        self.bn1 = nn.LayerNorm(1024)
+        self.bn2 = nn.LayerNorm(512)
+        self._init_weights()
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+            elif isinstance(m, nn.Conv1d):
+                nn.init.kaiming_normal_(m.weight)
+
     def forward(self, smiles, sequence, e3fp, ergfp, pubfp, maccsfp, data_mol, data_pro, smi_m, seq_m):
         mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.edge_index, data_mol.batch
         x1 = self.mol_conv1(mol_x, mol_edge_index)
@@ -231,4 +243,4 @@ class CoreNet(nn.Module):
         xc = self.dropout(xc)
         
         out = self.out(xc)
-        return self.bn_out(out)
+        return out
